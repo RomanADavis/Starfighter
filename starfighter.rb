@@ -13,6 +13,9 @@ class GameWindow < Gosu::Window
 		
 		@player = Player.new(self)
 		@player.warp(320, 240)
+		
+		@star_anim = Gosu::Image::load_tiles(self, "media/Star.png", 25, 25, false)
+		@stars = Array.new
 	end
 	
 	def update
@@ -20,11 +23,15 @@ class GameWindow < Gosu::Window
 		@player.turn_right if button_down?(Gosu::KbRight) || button_down?(Gosu::GpRight)
 		@player.accelerate if button_down?(Gosu::KbUp) || button_down?(Gosu::GpButton0)
 		@player.move
+		@player.collect_stars(@stars)
+		
+		@stars.push(Star.new(@star_anim)) if rand(100) < 4 && @stars.size < 25
 	end
 	
 	def draw
 		@player.draw
 		@background_image.draw(0, 0, ZOrder::Background)
+		@stars.each {|star| star.draw}
 	end
 	
 	def button_up(id)
@@ -37,6 +44,14 @@ class Player
 		@image  = Gosu::Image.new(window, "media/Starfighter.bmp", false)
 		@x = @y = @vel_x = @vel_y = @angle = 0
 		@score = 0
+	end
+	
+	def score
+		@score
+	end
+	
+	def collect_stars(stars)
+		@score += 1 if stars.reject! {|star|  Gosu::distance(@x, @y, star.x, star.y) < 35 }
 	end
 	
 	def warp x, y
