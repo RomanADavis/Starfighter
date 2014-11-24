@@ -1,5 +1,9 @@
 require "gosu"
 
+module ZOrder
+	Background, Stars, Player, UI = *0..3
+end
+
 class GameWindow < Gosu::Window
 	def initialize
 		super(640, 480, false)
@@ -20,7 +24,7 @@ class GameWindow < Gosu::Window
 	
 	def draw
 		@player.draw
-		@background_image.draw(0, 0, 0)
+		@background_image.draw(0, 0, ZOrder::Background)
 	end
 	
 	def button_up(id)
@@ -63,8 +67,9 @@ class Player
 	end
 	
 	def draw
-		@image.draw_rot(@x, @y, 1, @angle)
+		@image.draw_rot(@x, @y, ZOrder::Player, @angle)
 	end
 end
+
 window = GameWindow.new
 window.show
